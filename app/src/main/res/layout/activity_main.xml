@@ -9,20 +9,23 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="412dp"
+        android:layout_height="564dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/image_capture_button"
         android:layout_width="110dp"
         android:layout_height="110dp"
-        android:layout_marginBottom="50dp"
         android:layout_marginEnd="50dp"
+        android:layout_marginBottom="50dp"
         android:elevation="2dp"
         android:text="@string/take_photo"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/vertical_centerline" />
+        app:layout_constraintEnd_toStartOf="@id/vertical_centerline"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
         android:id="@+id/video_capture_button"
@@ -41,5 +44,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".50" />
+
+    <TextView
+        android:id="@+id/recycleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="Recycle:"
+        android:textSize="34sp"
+        app:layout_constraintTop_toBottomOf="@+id/image_capture_button"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="34dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
