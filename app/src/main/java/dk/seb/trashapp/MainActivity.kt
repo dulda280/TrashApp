@@ -74,7 +74,8 @@ class MainActivity : AppCompatActivity() {
 
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
-
+        recycleText = findViewById(R.id.recycleText)
+        recycleText.text = "Plastic?"
         // Create time stamped name and MediaStore entry.
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
@@ -111,8 +112,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
-        recycleText = findViewById(R.id.recycleText)
-        recycleText.text = "Plastic?"
+
     }
 
 
@@ -132,6 +132,9 @@ class MainActivity : AppCompatActivity() {
                     it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
                 }
 
+            imageCapture = ImageCapture.Builder()
+                .build()
+
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -141,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview)
+                    this, cameraSelector, preview, imageCapture)
 
             } catch(exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
