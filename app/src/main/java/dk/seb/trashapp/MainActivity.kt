@@ -2,7 +2,10 @@ package dk.seb.trashapp
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.media.ThumbnailUtils
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -31,9 +34,14 @@ import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
 import androidx.camera.video.VideoRecordEvent
 import androidx.core.content.PermissionChecker
+import dk.seb.trashapp.ml.ModelUnquant
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.min
 
 typealias LumaListener = (luma: Double) -> Unit
 
@@ -43,12 +51,11 @@ class MainActivity : AppCompatActivity() {
 
     private var imageCapture: ImageCapture? = null
 
-    private var videoCapture: VideoCapture<Recorder>? = null
-    private var recording: Recording? = null
-
     private lateinit var cameraExecutor: ExecutorService
 
     private lateinit var recycleText: TextView
+
+    private val imageSize = 224
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set up the listeners for take photo and video capture buttons
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-        viewBinding.videoCaptureButton.setOnClickListener { captureVideo() }
+
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -115,8 +122,51 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            var image:Bitmap = data?.extras?.get("data") as Bitmap
+            val dimensions = min(image.width, image.height)
+            image = ThumbnailUtils.extractThumbnail(image, dimensions, dimensions)
 
-    private fun captureVideo() {}
+            image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false)
+
+
+
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun classifyImage(image: Bitmap) {
+        val model = ModelUnquant.newInstance(applicationContext)
+
+    // Creates inputs for reference.
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 224, 224, 3), DataType.FLOAT32)
+        var byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3)
+        byteBuffer.order(ByteOrder.nativeOrder())
+
+        val pixValues: IntArray = intArrayOf(imageSize*imageSize)
+        image.getPixels(pixValues, 0, image.width, 0, 0, image.width, image.height)
+        var pixel = 0
+
+        for (i in 0 until imageSize) {
+            for (j in 0 until imageSize) {
+                val pxval = pixValues[pixel++]
+                byteBuffer.putFloat((pxval shr 16 and 0xFF) * (1F / 255F))
+                byteBuffer.putFloat((pxval shr 8 and 0xFF) * (1F / 255F))
+                byteBuffer.putFloat((pxval and 0xFF) * (1F / 255F))
+            }
+        }
+
+
+
+        inputFeature0.loadBuffer(byteBuffer)
+    // Runs model inference and gets result.
+        val outputs = model.process(inputFeature0)
+        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+    // Releases model resources if no longer used.
+        model.close()
+    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -194,3 +244,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
