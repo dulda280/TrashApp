@@ -157,12 +157,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
         inputFeature0.loadBuffer(byteBuffer)
     // Runs model inference and gets result.
         val outputs = model.process(inputFeature0)
         val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+        val confidences: FloatArray = outputFeature0.floatArray
+
+        var maxPos = 0
+        var maxConfidence: Float = 0F
+        for (i in confidences.indices)
+            if(confidences[i] > maxConfidence){
+                maxConfidence = confidences[i]
+                maxPos = i
+
+            }
+        var classes: String = {}
+
 
     // Releases model resources if no longer used.
         model.close()
