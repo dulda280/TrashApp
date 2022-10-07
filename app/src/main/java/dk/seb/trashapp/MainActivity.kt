@@ -71,18 +71,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set up the listeners for take photo and video capture buttons
-        viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
+        viewBinding.imageCaptureButton.setOnClickListener {
 
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivity(cameraIntent)
+
+
+
+        }
+        recycleText = findViewById(R.id.recycleText)
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     private fun takePhoto() {
 
+
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
-        recycleText = findViewById(R.id.recycleText)
-        recycleText.text = "Plastic?"
+
         // Create time stamped name and MediaStore entry.
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
@@ -130,6 +137,7 @@ class MainActivity : AppCompatActivity() {
 
             image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false)
 
+            classifyImage(image)
 
 
         }
@@ -171,7 +179,20 @@ class MainActivity : AppCompatActivity() {
                 maxPos = i
 
             }
+
         //var classes: String = {}
+
+
+        val classes = Array<String>(5){"Cardboard"; "Glass"; "Metal"; "Paper"; "Plastic" }
+
+        recycleText.setText(classes[maxPos])
+
+        var t = ""
+        for(i in classes.indices){
+            t += String.format("%t: %.1f%% \n", classes[i], confidences[i] * 100)
+        }
+        Toast.makeText(applicationContext, classes[maxPos], Toast.LENGTH_LONG).show()
+
 
 
     // Releases model resources if no longer used.
