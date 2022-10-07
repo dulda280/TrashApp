@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                 maxPos = i
 
             }
-        var classes: String = {}
+        //var classes: String = {}
 
 
     // Releases model resources if no longer used.
