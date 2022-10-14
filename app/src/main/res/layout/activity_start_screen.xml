@@ -4,15 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:textAlignment="center"
     tools:context=".StartScreen">
 
     <TextView
         android:id="@+id/trashHelper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="550dp"
+        android:layout_marginBottom="180dp"
         android:text="TrashHelper"
+        android:textColor="#FFFFFF"
         android:textSize="64dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +25,11 @@
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="336dp"
-        android:layout_height="38dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="60dp"
+        android:contentDescription="Vælg Kommune"
+        android:textAlignment="center"
+        android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,12 +37,25 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="336dp"
+        android:layout_height="57dp"
+        android:layout_marginBottom="60dp"
         android:text="Næste"
+        android:theme="@style/Button.Black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="184dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="480dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/trashapplogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
