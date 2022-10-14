@@ -25,9 +25,11 @@
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="336dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="60dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="80dp"
+        android:background="@color/button"
         android:contentDescription="Vælg Kommune"
+        android:dropDownSelector="@color/white"
         android:textAlignment="center"
         android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -38,8 +40,9 @@
     <Button
         android:id="@+id/button"
         android:layout_width="336dp"
-        android:layout_height="57dp"
-        android:layout_marginBottom="60dp"
+        android:layout_height="49dp"
+        android:layout_marginBottom="80dp"
+        android:background="@color/button"
         android:text="Næste"
         android:theme="@style/Button.Black"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -57,5 +60,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/trashapplogo" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vælg Kommune"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/trashHelper"
+        app:layout_constraintVertical_bias="0.891" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
