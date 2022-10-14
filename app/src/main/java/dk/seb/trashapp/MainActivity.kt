@@ -20,6 +20,8 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import dk.seb.trashapp.databinding.ActivityMainBinding
 import dk.seb.trashapp.ml.Model
 import org.tensorflow.lite.DataType
@@ -33,34 +35,32 @@ typealias LumaListener = (luma: Double) -> Unit
 
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var viewBinding: ActivityMainBinding
-
-    var result: TextView? = null
-    var confidence:TextView? = null
-    var imageView: ImageView? = null
-    var picture: Button? = null
-
+    lateinit var result: TextView
+    private lateinit var confidence:TextView
+    private lateinit var imageView: ImageView
+    private lateinit var picture: Button
+    private lateinit var binding: ActivityMainBinding
     private val imageSize = 224
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(viewBinding.root)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         result = findViewById(R.id.result)
         confidence = findViewById(R.id.confidence)
         imageView = findViewById(R.id.imageView)
-        picture = findViewById(R.id.button)
+        picture = findViewById(R.id.image_capture_button)
 
 
         // Set up the listeners for take photo and video capture buttons
-        viewBinding.imageCaptureButton.setOnClickListener {
+        binding.imageCaptureButton.setOnClickListener {
             // Request camera permissions
             if (allPermissionsGranted()) {
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivity(cameraIntent)
+                // StartActivityForResult to be changed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                startActivityForResult(cameraIntent, 1)
             } else {
                 ActivityCompat.requestPermissions(
                     this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
@@ -71,16 +71,17 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+
+        if (requestCode == 3 && resultCode == RESULT_OK) {
+            setContentView(binding.root)
             var image:Bitmap = data?.extras?.get("data") as Bitmap
             val dimensions = min(image.width, image.height)
             image = ThumbnailUtils.extractThumbnail(image, dimensions, dimensions)
 
             image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false)
 
-            imageView?.setImageBitmap(image)
+            binding.imageView.setImageBitmap(image)
             classifyImage(image)
 
 
@@ -129,13 +130,13 @@ class MainActivity : AppCompatActivity() {
 
         val classes = Array<String>(5){"Cardboard"; "Glass"; "Metal"; "Paper"; "Plastic" }
 
-        result?.setText(classes[maxPos])
+        result.text = classes[maxPos]
 
         var t = ""
         for(i in classes.indices){
             t += String.format("%t: %.1f%% \n", classes[i], confidences[i] * 100)
         }
-        confidence?.setText(t)
+        confidence.text = t
         Toast.makeText(applicationContext, classes[maxPos], Toast.LENGTH_LONG).show()
 
 
@@ -148,11 +149,6 @@ class MainActivity : AppCompatActivity() {
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
     }
 
     companion object {
